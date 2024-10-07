@@ -9,6 +9,7 @@
                 'views/sales_order.xml',
                 'views/account_move.xml',
                 'data/sequence.xml',
+                'data/scheduled_job.xml',
                 'views/menu.xml',
                 'security/ir.model.access.csv',
             ],

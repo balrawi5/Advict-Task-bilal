@@ -1,12 +1,12 @@
 Overview:
-    This module extends Odoo's product, sales, and invoicing functionalities by adding 
-    custom fields and logic for managing warranties. It also includes a warranty report
+    This module extends Odoo's product, sales, and invoicing functionalities by adding custom fields and logic for managing warranties. It also includes a warranty report and an automated email notification system to remind customers about warranty expiry.
 
 Features:
     - Product Customization: Adds warranty period and manufacturer fields to the product form.
     - Sale Order Customization: Automatically populates the warranty period on sale order lines based on the selected product.
     - Invoice Customization: Calculates and displays the warranty expiry date on customer invoices.
     - Warranty Report: Lists sale orders along with their warranty expiry dates, with filters for products and customers.
+    - Warranty Expiry Notifications: Automatically sends an email reminder to customers 30 days before their warranty expires.
 
 Installation:
     1. download the module into your Odoo addons directory
@@ -46,3 +46,15 @@ Usage:
                 - Warranty period
                 - Warranty expiry date
             C. You can filter the report by customer or product.
+
+        5. Warranty Expiry Notifications:
+            A. The module automatically sends an email reminder to customers 30 days before their warranty expires.
+            B. The email is sent from the Odoo server and includes the customer's name
+            C. To check or manually trigger the scheduled action, navigate to 
+                Settings > Technical > Automation > Scheduled Actions 
+                search for "Warranty Expiry Notification".
+            D. The email template used for notifications is customizable: - Go to 
+                Settings > Technical > Email > Emal Templates. 
+                - Search for the template named Warranty Expiry Notification. You can modify the email content here.
+
+

@@ -1,0 +1,46 @@
+<odoo>
+    <data>
+        <record id="mail_template_warranty_expiry" model="mail.template">
+            <field name="name">Warranty Expiry Notification</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="subject">Warranty Expiry Reminder</field>
+            <field name="email_from">${(object.user_id.email_formatted or '')|safe}</field>
+            <field name="email_to">${object.partner_id.email}</field>
+            <field name="body_html" type="html">
+                <div>
+                    <div>
+                        <h2>
+                            Hi,
+                            <t t-out="object.partner_id.name"/>
+                        </h2>
+                        <div>
+                            <h3>
+                               This is a reminder that your warranty for the product will expire on
+                                <t t-out="object.warranty_expiry_date"/>                            
+                            </h3>
+                        </div>
+                    </div>
+                    <br/>
+                    <br/>
+                    Regards,
+                    <br/>
+                    <t t-out="object.company_id.name"/>
+                    <br/>
+                </div>
+            </field>
+        </record>
+
+
+
+        <record id="ir_cron_warranty_notification" model="ir.cron">
+            <field name="name">Warranty Expiry Notification</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="state">code</field>
+            <field name="code">model.send_warranty_notifications()</field> 
+            <field name="active" eval="True"/>
+            <field name="interval_type">days</field>
+            <field name="interval_number">1</field>
+            <field name="numbercall">-1</field>
+        </record>
+    </data>
+</odoo>

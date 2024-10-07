@@ -1,5 +1,9 @@
 from odoo import models, fields, api
 from datetime import timedelta
+import logging
+
+_logger = logging.getLogger(__name__)
+
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
@@ -14,11 +18,25 @@ class AccountMove(models.Model):
     @api.depends('order_date', 'warranty_period')
     def _compute_warranty_expiry(self):
         for record in self:
-            if record.warranty_period == 0:
-                record.warranty_expiry_date = record.order_date
+            if record.warranty_period and record.order_date:
+                record.warranty_expiry_date = record.order_date + timedelta(days=record.warranty_period)
             else:
-                if record.order_date and record.warranty_period:
-                    record.warranty_expiry_date = fields.Date.add(record.order_date, days=record.warranty_period)
-                else:
-                    record.warranty_expiry_date = False
+                record.warranty_expiry_date = False
+
+    @api.model
+    def send_warranty_notifications(self):
+        today = fields.Date.today()
+        soon_expiring = self.search([
+            ('warranty_expiry_date', '>', today),
+            ('warranty_expiry_date', '<=', today + timedelta(days=30)),
+            ('state', '=', 'posted')  # Ensure the invoice is posted
+        ])
+        _logger.info(f"Found {len(soon_expiring)} invoices expiring soon.")
+        for invoice in soon_expiring:
+            _logger.info(f"Sending email for {invoice.id} to {invoice.partner_id.email}")
+            template_id = self.env.ref('new_task.mail_template_warranty_expiry', raise_if_not_found=False)
+            if template_id:
+                template_id.send_mail(invoice.id, force_send=True)
+            else:
+                _logger.warning("Warranty expiry notification template not found.")
 
